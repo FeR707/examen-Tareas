@@ -1,5 +1,5 @@
 (function(){
-	var lista = document.getElementById("lista"),
+	var thead = document.getElementById("tabla-tareas"),
 		tareaInput = document.getElementById("tareaInput"),
         alumnoText = document.getElementById("alumnoText"),
 		btnNuevaTarea = document.getElementById("btn-agregar");
@@ -7,48 +7,84 @@
 	var agregarTarea = function(){
 		var tarea = tareaInput.value;
         var alumno = alumnoText.value,
-			nuevaTarea = document.createElement("li"),
-			enlace = document.createElement("a"),
-			contenido = document.createTextNode("Tarea: " + tarea +" . " + " Para Alumnos: "+ alumno);
+        	tr = document.createElement("tr"),
+			tdTarea = document.createElement("td"),
+			tdAlumno = document.createElement("td"),
+			completado = document.createElement("button"),
+			tdEntregar = document.createElement("td"),
+			entregar = document.createElement("button"),
+			contenido = document.createTextNode("NO"),
+			contenido2 = document.createTextNode("ENTREGAR");
 
-		if (tarea === "") {
-			tareaInput.setAttribute("placeholder", "Agrega una tarea valida");
-			tareaInput.className = "error";
-			return false;
-		}
 
-		enlace.appendChild(contenido);
+		tdTarea.innerHTML = tarea;
+		tdAlumno.innerHTML = alumno;
+		completado.appendChild(contenido);
+		entregar.appendChild(contenido2);
 
-		enlace.setAttribute("href", "#");
+		completado.setAttribute("class", "completado");
+		completado.setAttribute("id", "completo");
 
-		nuevaTarea.appendChild(enlace);
+		entregar.setAttribute("class", "entrega");
+		entregar.setAttribute("id", "entregar");
+		tdEntregar.appendChild(entregar);
 
-		lista.appendChild(nuevaTarea);
+		tr.appendChild(tdTarea);
+		tr.appendChild(tdAlumno);
+		tr.appendChild(completado);
+		tr.appendChild(tdEntregar);
+
+		thead.appendChild(tr);
+
 
 		tareaInput.value = "";
         alumnoText.value = "";
 
-		for (var i = 0; i <= lista.children.length -1; i++) {
-			lista.children[i].addEventListener("click", function(){
-				this.parentNode.removeChild(this);
+
+
+        entregar.addEventListener("click", function(){
+
+        if (this.innerHTML == 'ENTREGAR'){
+		  	Swal.fire({
+			  position: 'top-end',
+			  icon: 'success',
+			  title: 'Trabajo Enviado',
+			  showConfirmButton: false,
+			  timer: 1500
 			});
-		}
+			this.innerHTML = "DESHACER ENTREGA";
+		  	completado.style.backgroundColor = "#109c10";
+		  	completado.innerHTML = "SI";
+		  }
+		else {
+			Swal.fire({
+			  title: 'Quieres deshacer la entrega?',
+			  text: "Podras volver a entregarlo mas tarde!",
+			  icon: 'warning',
+			  showCancelButton: true,
+			  confirmButtonColor: '#3085d6',
+			  cancelButtonColor: '#d33',
+			  confirmButtonText: 'Si, deshacer entrega'
+			}).then((result) => {
+			  if (result.isConfirmed) {
+			    Swal.fire(
+			      'Desecho!',
+			      'Se a desecho la entrega.',
+			      'success'
+			    )
 
-	};
-	var comprobarInput = function(){
-		tareaInput.className = "";
-		teareaInput.setAttribute("placeholder", "Agrega tu tarea");
-	};
+			    this.innerHTML = "ENTREGAR";
+		  		completado.style.backgroundColor = "red";
+		  		completado.innerHTML = "NO";
+			  }
+			});
 
-	var eleminarTarea = function(){
-		this.parentNode.removeChild(this);
+		  }
+
+        });
+
 	};
 
 	btnNuevaTarea.addEventListener("click", agregarTarea);
 
-	tareaInput.addEventListener("click", comprobarInput);
-
-	for (var i = 0; i <= lista.children.length -1; i++) {
-		lista.children[i].addEventListener("click", eleminarTarea);
-	}
 }());
